@@ -21,7 +21,7 @@ class Module
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $ceatedAt = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int
     {
@@ -52,14 +52,14 @@ class Module
         return $this;
     }
 
-    public function getCeatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->ceatedAt;
+        return $this->createdAt;
     }
 
-    public function setCeatedAt(\DateTimeImmutable $ceatedAt): static
+    public function setCreatedAt(\DateTimeImmutable $ceatedAt): static
     {
-        $this->ceatedAt = $ceatedAt;
+        $this->createdAt = $ceatedAt;
 
         return $this;
     }
