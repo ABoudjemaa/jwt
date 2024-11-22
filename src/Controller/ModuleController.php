@@ -7,16 +7,22 @@ use App\Entity\Module;
 use App\Repository\ModuleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ModuleController extends AbstractController
 {
-    #[Route('/api/modules', name: 'app_module', methods: ['GET'])]
-    public function index(ModuleRepository $moduleRepository): Response
+    #[Route('/api/modules', name: 'get_modules', methods: ['GET'])]
+    public function index(ModuleRepository $moduleRepository): JsonResponse
     {
-        $modules = $moduleRepository->findAll();
+        // Fetch only titles and IDs
+        $modules = $moduleRepository->createQueryBuilder('m')
+            ->select('m.id, m.title')
+            ->getQuery()
+            ->getResult();
+
         return $this->json($modules);
     }
 
@@ -59,5 +65,23 @@ class ModuleController extends AbstractController
                 'createdAt' => $module->getCreatedAt()->format('Y-m-d H:i:s'),
             ]
         ], Response::HTTP_CREATED);
+    }
+
+    #[Route('/api/modules/{id}', name: 'get_module_details', methods: ['GET'])]
+    public function getModuleDetails(int $id, ModuleRepository $moduleRepository): JsonResponse
+    {
+        // Fetch module details by ID
+        $module = $moduleRepository->find($id);
+
+        if (!$module) {
+            return $this->json(['error' => 'Module not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json([
+            'id' => $module->getId(),
+            'title' => $module->getTitle(),
+            'description' => $module->getDescription(),
+            'createdAt' => $module->getCreatedAt()->format('Y-m-d H:i:s'),
+        ]);
     }
 }
